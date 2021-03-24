@@ -76,6 +76,7 @@ def load_example_semi():
 
 
 def load_example_gem():
+<<<<<<< Updated upstream
     # example data for GEM
     # node=8  p=7  D=2
     features = np.array([[5, 3, 0, 1, 0, 0, 0, 1, 0],
@@ -166,3 +167,97 @@ def load_data_gas(train_size=0.8):
                                                         shuffle=True)
 
     return adjs, features, X_train, y_train, X_val, y
+=======
+	# example data for GEM
+	# node=8  p=7  D=2
+	features = np.array([[5, 3, 0, 1, 0, 0, 0, 1, 0],
+						 [2, 3, 1, 2, 0, 0, 0, 1, 0],
+						 [3, 1, 6, 4, 0, 0, 1, 1, 0],
+						 [0, 0, 2, 4, 4, 1, 0, 1, 1],
+						 [0, 0, 3, 3, 1, 0, 1, 0, 1],
+						 [1, 2, 5, 1, 4, 1, 0, 0, 1],
+						 [0, 1, 3, 5, 1, 0, 0, 0, 1],
+						 [0, 3, 4, 5, 2, 1, 1, 0, 1]
+						 ])
+	N = features.shape[0]
+	rownetworks = [np.array([[1, 1, 1, 1, 0, 0, 0, 0],
+							 [1, 1, 1, 1, 0, 0, 0, 0],
+							 [1, 1, 1, 1, 0, 0, 0, 0],
+							 [1, 1, 1, 1, 0, 0, 0, 0],
+							 [0, 0, 0, 0, 0, 0, 0, 0],
+							 [0, 0, 0, 0, 0, 0, 0, 0],
+							 [0, 0, 0, 0, 0, 0, 0, 0],
+							 [0, 0, 0, 0, 0, 0, 0, 0]]),
+				   np.array([[0, 0, 0, 0, 0, 0, 0, 0],
+							 [0, 0, 0, 0, 0, 0, 0, 0],
+							 [0, 0, 0, 0, 0, 0, 0, 0],
+							 [0, 0, 0, 1, 1, 1, 1, 1],
+							 [0, 0, 0, 1, 1, 1, 1, 1],
+							 [0, 0, 0, 1, 1, 1, 1, 1],
+							 [0, 0, 0, 1, 1, 1, 1, 1],
+							 [0, 0, 0, 1, 1, 1, 1, 1]])]
+	# y = np.array([-1, -1, -1, -1, 1, 1, 1, 1])
+	y = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+	y = y[:, np.newaxis]
+	index = range(len(y))
+	X_train, X_test, y_train, y_test = train_test_split(index, y, stratify=y, test_size=0.2, random_state=8,
+														shuffle=True)
+
+	return rownetworks, features, X_train, y_train, X_test, y_test
+
+
+def load_data_gas(train_size=0.8):
+	# example data for GAS
+	# construct U-E-I network
+	user_review_adj = [[0, 1], [2], [3], [5], [4, 6]]
+	user_review_adj = pad_adjlist(user_review_adj)
+	user_item_adj = [[0, 1], [0], [0], [2], [1, 2]]
+	user_item_adj = pad_adjlist(user_item_adj)
+	item_review_adj = [[0, 2, 3], [1, 4], [5, 6]]
+	item_review_adj = pad_adjlist(item_review_adj)
+	item_user_adj = [[0, 1, 2], [0, 4], [3, 4]]
+	item_user_adj = pad_adjlist(item_user_adj)
+	review_item_adj = [0, 1, 0, 0, 1, 2, 2]
+	review_user_adj = [0, 0, 1, 2, 4, 3, 4]
+
+	# initialize review_vecs
+	review_vecs = np.array([[1, 0, 0, 1, 0],
+							[1, 0, 0, 1, 1],
+							[1, 0, 0, 0, 0],
+							[0, 1, 0, 0, 1],
+							[0, 1, 1, 1, 0],
+							[0, 0, 1, 1, 1],
+							[1, 1, 0, 1, 1]])
+
+	# initialize user_vecs and item_vecs with user_review_adj and item_review_adj
+	# for example, u0 has r1 and r0, then we get the first line of user_vecs: [1, 1, 0, 0, 0, 0, 0]
+	user_vecs = np.array([[1, 1, 0, 0, 0, 0, 0],
+						  [0, 0, 1, 0, 0, 0, 0],
+						  [0, 0, 0, 1, 0, 0, 0],
+						  [0, 0, 0, 0, 0, 1, 0],
+						  [0, 0, 0, 0, 1, 0, 1]])
+	item_vecs = np.array([[1, 0, 1, 1, 0, 0, 0],
+						  [0, 1, 0, 0, 1, 0, 0],
+						  [0, 0, 0, 0, 0, 1, 1]])
+	features = [review_vecs, user_vecs, item_vecs]
+
+	# initialize the Comment Graph
+	homo_adj = [[1, 0, 0, 0, 1, 1, 1],
+				[1, 0, 0, 0, 1, 1, 0],
+				[0, 0, 0, 1, 1, 1, 0],
+				[1, 0, 1, 0, 0, 1, 0],
+				[0, 1, 1, 1, 1, 0, 0],
+				[0, 1, 1, 0, 1, 0, 0],
+				[0, 1, 0, 0, 1, 0, 0]]
+
+	adjs = [user_review_adj, user_item_adj, item_review_adj, item_user_adj, review_user_adj, review_item_adj, homo_adj]
+
+	y = np.array([[0, 1], [1, 0], [1, 0], [0, 1], [1, 0], [1, 0], [0, 1]])
+	index = range(len(y))
+	X_train, X_val, y_train, y_val = train_test_split(index, y, stratify=y, test_size=0.4, random_state=48,
+														shuffle=True)
+	# dou: train val test needs to be split twice
+	# dou: you can only keep the training and testing and discard the validation set
+
+	return adjs, features, X_train, y_train, X_val, y
+>>>>>>> Stashed changes
